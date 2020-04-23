@@ -14,14 +14,20 @@ std::string GetLib() {
 int main() {
   auto cl = new dynamicclassloader::ClassLoader(GetLib());
 
-  auto square = cl->LoadClass<Shape, CreateSquareSymbol, DestroySquareSymbol>(
-      kSquareCreate, kRectangleCreate, 5);
-  auto rectangle =
-      cl->LoadClass<Shape, CreateRectangleSymbol, DestroyRectangleSymbol>(
-          kRectangleCreate, kRectangleDestroy, 2, 5);
+  // It it necessary to destroy the loaded plugins before destroying the class
+  // loader.
+  {
+    auto square = cl->LoadClass<Shape, CreateSquareSymbol, DestroySquareSymbol>(
+        kSquareCreate, kRectangleCreate, 5);
+    auto rectangle =
+        cl->LoadClass<Shape, CreateRectangleSymbol, DestroyRectangleSymbol>(
+            kRectangleCreate, kRectangleDestroy, 2, 5);
 
-  std::cout << "Shape: " << square->get_name() << "; Area: " << square->Area()
-            << std::endl;
-  std::cout << "Shape: " << rectangle->get_name()
-            << "; Area: " << rectangle->Area() << std::endl;
+    std::cout << "Shape: " << square->get_name() << "; Area: " << square->Area()
+              << std::endl;
+    std::cout << "Shape: " << rectangle->get_name()
+              << "; Area: " << rectangle->Area() << std::endl;
+  }
+
+  delete cl;
 }
